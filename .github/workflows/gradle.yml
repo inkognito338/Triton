@@ -1,41 +1,41 @@
 name: Build ShadowJar
 
 on:
-  push:
-    branches: [ "main" ]
+push:
+branches: [ "main" ]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+build:
+runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+```
+steps:
+  - name: Checkout
+    uses: actions/checkout@v4
 
-      - name: Make gradlew executable
-        run: chmod +x gradlew
+  - name: Make gradlew executable
+    run: chmod +x gradlew
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 17
+  - name: Set up JDK 17
+    uses: actions/setup-java@v4
+    with:
+      distribution: temurin
+      java-version: 17
 
-      - name: Build ShadowJar
-        run: ./gradlew shadowJar --stacktrace
+  - name: Build all ShadowJars
+    run: ./gradlew shadowJar --stacktrace
 
-      # 🔍 покажет где реально лежит jar
-      - name: Debug files
-        run: |
-          echo "=== BUILD DIR ==="
-          ls -R build || true
-          echo "=== ALL JARS ==="
-          find . -name "*.jar"
+  # 🔍 покажет где реально лежат jar
+  - name: Debug jars
+    run: |
+      echo "=== ALL JARS ==="
+      find . -name "*.jar"
 
-      # 📦 грузим ВСЕ jar независимо от пути
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: jars
-          path: |
-            **/*.jar
+  # 📦 загрузка ВСЕХ jar из всех модулей
+  - name: Upload artifacts
+    uses: actions/upload-artifact@v4
+    with:
+      name: jars
+      path: |
+        **/build/libs/*.jar
+```
