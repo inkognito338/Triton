@@ -9,25 +9,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Make gradlew executable
         run: chmod +x gradlew
 
-      - name: Set up JDK
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: temurin
+          java-version: 17
 
-      - name: Build with Gradle
+      - name: Build ShadowJar
         run: ./gradlew shadowJar --stacktrace
 
-      - name: Debug output
-        run: ls -R build
+      # 🔍 покажет где реально лежит jar
+      - name: Debug files
+        run: |
+          echo "=== BUILD DIR ==="
+          ls -R build || true
+          echo "=== ALL JARS ==="
+          find . -name "*.jar"
 
-      - name: Upload artifact
+      # 📦 грузим ВСЕ jar независимо от пути
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: shadowjar
-          path: build/libs/*.jar
+          name: jars
+          path: |
+            **/*.jar
